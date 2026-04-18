@@ -1,65 +1,228 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+const SERVICES = [
+  {
+    icon: "🚿",
+    title: "Lavage extérieur",
+    desc: "Carrosserie, jantes, vitres — résultat showroom garanti.",
+  },
+  {
+    icon: "🧹",
+    title: "Nettoyage intérieur",
+    desc: "Aspiration, plastiques, tapis et sièges traités en profondeur.",
+  },
+  {
+    icon: "✨",
+    title: "Polish & protection",
+    desc: "Traitement céramique et polish pour protéger votre peinture.",
+  },
+  {
+    icon: "📍",
+    title: "À domicile",
+    desc: "On se déplace sur Rennes et toute l'Ille-et-Vilaine.",
+  },
+];
+
+const ZONES = [
+  "Rennes",
+  "Saint-Malo",
+  "Fougères",
+  "Vitré",
+  "Redon",
+  "Dinard",
+  "Bruz",
+  "Cesson-Sévigné",
+];
+
+type FormState = "idle" | "loading" | "success" | "error";
 
 export default function Home() {
+  const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [status, setStatus] = useState<FormState>("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+
+    const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+    if (!endpoint) {
+      setStatus("error");
+      return;
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(form),
+      });
+      setStatus(res.ok ? "success" : "error");
+    } catch {
+      setStatus("error");
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main>
+      {/* Hero */}
+      <section className="bg-blue-700 text-white py-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-4 leading-tight">
+            Nettoyage Voiture à Rennes — Pro, Rapide, à Domicile
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-blue-100 mb-8">
+            Votre véhicule mérite un soin professionnel. On se déplace chez vous
+            sur Rennes et toute l&apos;Ille-et-Vilaine.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#devis"
+            className="inline-block bg-white text-blue-700 font-bold px-8 py-4 rounded-lg text-lg hover:bg-blue-50 transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+            Devis gratuit en 2 min →
           </a>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Services */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Nos prestations
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {SERVICES.map((s) => (
+              <div key={s.title} className="bg-white rounded-xl p-6 shadow-sm">
+                <div className="text-4xl mb-3">{s.icon}</div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{s.title}</h3>
+                <p className="text-gray-600">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Zones */}
+      <section className="py-10 px-4 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Zones d&apos;intervention
+          </h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {ZONES.map((z) => (
+              <span
+                key={z}
+                className="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium"
+              >
+                {z}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Lead form */}
+      <section id="devis" className="py-16 px-4 bg-blue-50">
+        <div className="max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">
+            Devis gratuit
+          </h2>
+          <p className="text-center text-gray-600 mb-8">
+            On vous rappelle sous 2h en semaine.
+          </p>
+
+          {status === "success" ? (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
+              <div className="text-5xl mb-4">✅</div>
+              <h3 className="text-xl font-semibold text-green-800 mb-2">
+                Demande reçue !
+              </h3>
+              <p className="text-green-700">
+                On vous contacte sous 2h pour confirmer votre rendez-vous.
+              </p>
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white rounded-xl shadow-sm p-8 space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nom *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Jean Dupont"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Téléphone *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="06 12 34 56 78"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="jean@exemple.fr"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Votre besoin
+                </label>
+                <textarea
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ex : nettoyage complet intérieur + extérieur, SUV, Rennes centre..."
+                />
+              </div>
+
+              {status === "error" && (
+                <p className="text-red-600 text-sm">
+                  Une erreur s&apos;est produite. Réessayez ou appelez-nous directement.
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="w-full bg-blue-700 text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-60"
+              >
+                {status === "loading" ? "Envoi en cours…" : "Demander mon devis gratuit"}
+              </button>
+              <p className="text-xs text-gray-400 text-center">
+                Pas de spam. On vous rappelle, c&apos;est tout.
+              </p>
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-8 px-4 text-center text-sm">
+        <p>© {new Date().getFullYear()} Nettoyage Voiture Rennes — Ille-et-Vilaine</p>
+      </footer>
+    </main>
   );
 }
