@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
-import { appendFileSync, mkdirSync } from "fs";
-import { join } from "path";
+
+const AIRTABLE_BASE = "appitbVZG5ZjPhEIl";
+const AIRTABLE_TABLE = "tbl0T1thXXPLrJT0M";
 
 export interface LeadPayload {
   name: string;
@@ -26,35 +27,40 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Missing required fields" }, { status: 422 });
   }
 
-  const lead = {
-    ...body,
-    submittedAt: new Date().toISOString(),
-    ip: request.headers.get("x-forwarded-for") ?? "unknown",
-  };
-
-  // Persist locally (works for self-hosted / local dev).
-  // On Vercel the filesystem is ephemeral — swap this for a DB/KV call.
-  try {
-    const dir = join(process.cwd(), "data");
-    mkdirSync(dir, { recursive: true });
-    appendFileSync(join(dir, "leads.ndjson"), JSON.stringify(lead) + "\n", "utf8");
-  } catch (err) {
-    console.error("Lead write failed:", err);
-    // Non-fatal: continue so the user still gets a success response
+  const airtableKey = process.env.AIRTABLE_API_KEY;
+  if (!airtableKey) {
+    console.error("AIRTABLE_API_KEY not set");
+    return Response.json({ error: "Server configuration error" }, { status: 503 });
   }
 
-  // Optional: forward to Formspree for email notification.
-  const formspreeEndpoint = process.env.FORMSPREE_ENDPOINT;
-  if (formspreeEndpoint) {
-    try {
-      await fetch(formspreeEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(body),
-      });
-    } catch (err) {
-      console.error("Formspree forward failed:", err);
+  const airtableRes = await fetch(
+    `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${airtableKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fields: {
+          Nom: name.trim(),
+          Téléphone: phone.trim(),
+          ...(body.email?.trim() ? { Email: body.email.trim() } : {}),
+          Ville: location.trim(),
+          "Type de service": serviceType.trim(),
+          Source: "landing-page-rennes",
+          Statut: "Nouveau",
+          ...(body.message?.trim() ? { Notes: body.message.trim() } : {}),
+          "Date soumission": new Date().toISOString(),
+        },
+      }),
     }
+  );
+
+  if (!airtableRes.ok) {
+    const err = await airtableRes.text();
+    console.error("Airtable error:", err);
+    return Response.json({ error: "Failed to store lead" }, { status: 502 });
   }
 
   return Response.json({ ok: true }, { status: 201 });
