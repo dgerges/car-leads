@@ -36,26 +36,36 @@ const ZONES = [
   "Cesson-Sévigné",
 ];
 
+const SERVICE_TYPES = [
+  "Lavage extérieur",
+  "Nettoyage intérieur",
+  "Nettoyage complet (intérieur + extérieur)",
+  "Polish & protection céramique",
+  "Décontamination & préparation",
+  "Autre / Je ne sais pas encore",
+];
+
 type FormState = "idle" | "loading" | "success" | "error";
 
 export default function Home() {
-  const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    location: "",
+    serviceType: "",
+    message: "",
+  });
   const [status, setStatus] = useState<FormState>("idle");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
 
-    const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
-    if (!endpoint) {
-      setStatus("error");
-      return;
-    }
-
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/leads", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       setStatus(res.ok ? "success" : "error");
@@ -187,14 +197,43 @@ export default function Home() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Votre besoin
+                  Ville / Localité *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={form.location}
+                  onChange={(e) => setForm({ ...form, location: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ex : Rennes, Cesson-Sévigné, Saint-Malo…"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Type de prestation *
+                </label>
+                <select
+                  required
+                  value={form.serviceType}
+                  onChange={(e) => setForm({ ...form, serviceType: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="">Choisir une prestation…</option>
+                  {SERVICE_TYPES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Précisions (optionnel)
                 </label>
                 <textarea
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   rows={3}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Ex : nettoyage complet intérieur + extérieur, SUV, Rennes centre..."
+                  placeholder="Ex : SUV, cuirs, taches tenaces…"
                 />
               </div>
 
