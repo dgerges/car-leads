@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
 
-// Base: "Marketing campaign tracking" (appmk4faYAEOOLxHb)
-// Table: "Leads Nettoyage Voiture Rennes" (tbldDI41cqxOKIGoe)
-// PAT must have data.records:write on this base.
-const AIRTABLE_BASE = "appmk4faYAEOOLxHb";
-const AIRTABLE_TABLE = "tbldDI41cqxOKIGoe";
+// Base: "Untitled Base" (appYhpXIAsSifrlfv) — scope confirmed on provided PAT
+// Table: "Leads Nettoyage Voiture Rennes" (tblBmCXiUvl9lX8WI)
+const AIRTABLE_BASE = "appYhpXIAsSifrlfv";
+const AIRTABLE_TABLE = "tblBmCXiUvl9lX8WI";
 
 export interface LeadPayload {
   name: string;
