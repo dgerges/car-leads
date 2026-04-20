@@ -158,10 +158,11 @@ export default function Home() {
               className="bg-white rounded-xl shadow-sm p-8 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Nom *
                 </label>
                 <input
+                  id="name"
                   type="text"
                   required
                   value={form.name}
@@ -171,10 +172,11 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                   Téléphone *
                 </label>
                 <input
+                  id="phone"
                   type="tel"
                   required
                   value={form.phone}
@@ -184,10 +186,11 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
                 <input
+                  id="email"
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -196,10 +199,11 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
                   Ville / Localité *
                 </label>
                 <input
+                  id="location"
                   type="text"
                   required
                   value={form.location}
@@ -209,10 +213,11 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700 mb-1">
                   Type de prestation *
                 </label>
                 <select
+                  id="serviceType"
                   required
                   value={form.serviceType}
                   onChange={(e) => setForm({ ...form, serviceType: e.target.value })}
@@ -225,10 +230,11 @@ export default function Home() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                   Précisions (optionnel)
                 </label>
                 <textarea
+                  id="message"
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   rows={3}
@@ -250,7 +256,7 @@ export default function Home() {
               >
                 {status === "loading" ? "Envoi en cours…" : "Demander mon devis gratuit"}
               </button>
-              <p className="text-xs text-gray-400 text-center">
+              <p className="text-xs text-gray-500 text-center">
                 Pas de spam. On vous rappelle, c&apos;est tout.
               </p>
             </form>
