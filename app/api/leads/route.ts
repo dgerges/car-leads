@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
 
-const AIRTABLE_BASE = "appitbVZG5ZjPhEIl";
-const AIRTABLE_TABLE = "tbl0T1thXXPLrJT0M";
+// Base: "Marketing campaign tracking" (appmk4faYAEOOLxHb)
+// Table: "Leads Nettoyage Voiture Rennes" (tbldDI41cqxOKIGoe)
+// PAT must have data.records:write on this base.
+const AIRTABLE_BASE = "appmk4faYAEOOLxHb";
+const AIRTABLE_TABLE = "tbldDI41cqxOKIGoe";
 
 export interface LeadPayload {
   name: string;
@@ -47,11 +50,10 @@ export async function POST(request: NextRequest) {
           Téléphone: phone.trim(),
           ...(body.email?.trim() ? { Email: body.email.trim() } : {}),
           Ville: location.trim(),
-          "Type de service": serviceType.trim(),
-          Source: "landing-page-rennes",
+          "Type de prestation": serviceType.trim(),
           Statut: "Nouveau",
-          ...(body.message?.trim() ? { Notes: body.message.trim() } : {}),
-          "Date soumission": new Date().toISOString(),
+          ...(body.message?.trim() ? { Message: body.message.trim() } : {}),
+          "Soumis le": new Date().toISOString(),
         },
       }),
     }
