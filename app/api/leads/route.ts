@@ -61,8 +61,7 @@ export async function POST(request: NextRequest) {
   if (!airtableRes.ok) {
     const err = await airtableRes.text();
     console.error("Airtable error:", err);
-    // Temporary: surface Airtable error for debugging
-    return Response.json({ error: "Failed to store lead", detail: err, base: AIRTABLE_BASE, table: AIRTABLE_TABLE }, { status: 502 });
+    return Response.json({ error: "Failed to store lead" }, { status: 502 });
   }
 
   return Response.json({ ok: true }, { status: 201 });
